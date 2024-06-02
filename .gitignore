@@ -9,6 +9,7 @@ env/
 # OAuth credentials
 credentials.json
 token.json
+notion_token.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

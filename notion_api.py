@@ -1,7 +1,8 @@
 import requests
 import os
-from dotenv import load_dotenv
+import json
 import base64
+from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
@@ -15,8 +16,17 @@ TOKEN_URL = "https://api.notion.com/v1/oauth/token"
 SCOPE = "databases:write"
 NOTION_DATABASE_ID = "4abd649a047b4909968db2100d8a9a14"
 NOTION_API_URL = "https://api.notion.com/v1/pages"
+TOKEN_FILE = "notion_token.json"
 
 def authenticate_with_oauth():
+    if os.path.exists(TOKEN_FILE):
+        # Load access token from file
+        with open(TOKEN_FILE, "r") as file:
+            token_data = json.load(file)
+            access_token = token_data.get("access_token")
+            if access_token:
+                return access_token
+
     # Step 1: Construct Authorization URL
     auth_url = AUTHORIZATION_URL
     print("Please go to the following URL and authorize the application:")
@@ -53,6 +63,11 @@ def authenticate_with_oauth():
         return None
 
     access_token = token_response_json.get("access_token")
+
+    # Save access token to file
+    with open(TOKEN_FILE, "w") as file:
+        json.dump({"access_token": access_token}, file)
+
     return access_token
 
 def create_notion_page(task, access_token):
@@ -87,9 +102,9 @@ def main():
         return
     print("Access Token:", access_token)
     task = {
-        "title": "Sample Task 2", 
+        "title": "Sample Task 7", 
         "description": "This is a sample task description.",
-        "due": "2024-06-30"
+        "due": "2024-07-25"
     }
     print("Creating Notion page...")
     success = create_notion_page(task, access_token)
