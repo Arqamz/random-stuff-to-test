@@ -30,5 +30,26 @@ def fetch_google_tasks(service):
         task_list_id = task_list['id']
         print(f"Fetching tasks for task list with ID: {task_list_id}")
         tasks_result = service.tasks().list(tasklist=task_list_id).execute()
-        tasks.extend(tasks_result.get('items', []))
+        task_items = tasks_result.get('items', [])
+        for task in task_items:
+            tasks.append({
+                'title': task.get('title'),
+                'due': task.get('due'),
+                'notes': task.get('notes', 'No description'),
+                'status': task.get('status', 'needsAction')
+            })
     return tasks
+
+def main():
+    service = authenticate_google_tasks()
+    tasks = fetch_google_tasks(service)
+    if tasks:
+        print(f"Retrieved {len(tasks)} tasks:")
+        for task in tasks:
+            status = "Incomplete" if task['status'] == "needsAction" else "Completed"
+            print(f"Title: {task['title']}, Due: {task['due']}, Status: {status}, Notes: {task['notes']}")
+    else:
+        print("No tasks found.")
+
+if __name__ == '__main__':
+    main()

@@ -20,3 +20,9 @@ def start_scheduler():
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+def main():
+    sync_google_tasks_to_notion()
+
+if __name__ == '__main__':
+    main()

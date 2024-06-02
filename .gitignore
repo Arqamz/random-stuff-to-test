@@ -8,6 +8,7 @@ env/
 
 # OAuth credentials
 credentials.json
+token.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
