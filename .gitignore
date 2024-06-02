@@ -1,6 +1,7 @@
 # Virtual environment
 venv/
 env/
+.venv/
 
 # dotenv environment variables file
 .env
