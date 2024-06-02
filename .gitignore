@@ -1,10 +1,16 @@
-# Python
+# Virtual environment
+venv/
+
+# dotenv environment variables file
+.env
+
+# OAuth credentials
+credentials.json
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *.so
-*.egg
-*.egg-info
-*.pyd
 
 # Distribution / packaging
 .Python
@@ -71,34 +77,8 @@ ipython_config.py
 .python-version
 
 # Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyderworkspace
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-
-# Pyre type checker
-.pyre/
-
-# dotenv
 .env.local
 .env.*.local
-.env
 
 # VS Code
 .vscode/
