@@ -1,3 +1,4 @@
+import webbrowser
 import requests
 import os
 import json
@@ -30,7 +31,7 @@ def authenticate_with_oauth():
     # Step 1: Construct Authorization URL
     auth_url = AUTHORIZATION_URL
     print("Please go to the following URL and authorize the application:")
-    print(auth_url)
+    webbrowser.open(auth_url)
 
     # Step 2: Retrieve Authorization Code
     authorization_code = input("Enter the authorization code from the URL: ")
