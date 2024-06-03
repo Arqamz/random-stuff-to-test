@@ -29,7 +29,11 @@ def fetch_google_tasks(service):
     for task_list in task_lists:
         task_list_id = task_list['id']
         print(f"Fetching tasks for task list with ID: {task_list_id}")
-        tasks_result = service.tasks().list(tasklist=task_list_id).execute()
+        tasks_result = service.tasks().list(
+            tasklist=task_list_id,
+            showCompleted=True,
+            showHidden=True       # Show hidden tasks
+        ).execute()
         task_items = tasks_result.get('items', [])
         for task in task_items:
             tasks.append({

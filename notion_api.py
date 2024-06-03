@@ -18,6 +18,7 @@ SCOPE = "databases:write"
 NOTION_DATABASE_ID = "4abd649a047b4909968db2100d8a9a14"
 NOTION_API_URL = "https://api.notion.com/v1/pages"
 TOKEN_FILE = "notion_token.json"
+NOTION_VERSION = "2022-06-28"
 
 def authenticate_with_oauth():
     if os.path.exists(TOKEN_FILE):
@@ -54,16 +55,11 @@ def authenticate_with_oauth():
 
     token_response = requests.post(TOKEN_URL, headers=headers, json=token_data)
 
-    # Print the entire response for debugging
-    token_response_json = token_response.json()
-    print("Token Response Status Code:", token_response.status_code)
-    print("Token Response JSON:", token_response_json)
-
     if token_response.status_code != 200:
-        print(f"Failed to retrieve access token: {token_response_json}")
+        print(f"Failed to retrieve access token: {token_response.json()}")
         return None
 
-    access_token = token_response_json.get("access_token")
+    access_token = token_response.json().get("access_token")
 
     # Save access token to file
     with open(TOKEN_FILE, "w") as file:
@@ -71,48 +67,72 @@ def authenticate_with_oauth():
 
     return access_token
 
+def clear_notion_database(access_token):
+    url = f"https://api.notion.com/v1/databases/{NOTION_DATABASE_ID}/query"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+        "Notion-Version": NOTION_VERSION
+    }
+
+    print("Fetching all pages in the database...")
+    response = requests.post(url, headers=headers)
+    data = response.json()
+    print(f"Fetched {len(data.get('results', []))} pages.")
+
+    # Archive each page
+    for page in data.get('results', []):
+        page_id = page['id']
+        print(f"Archiving page with ID: {page_id}")
+        update_url = f"https://api.notion.com/v1/pages/{page_id}"
+        update_data = {"archived": True}
+        response = requests.patch(update_url, headers=headers, json=update_data)
+        if response.status_code == 200:
+            print(f"Successfully archived page with ID: {page_id}")
+        else:
+            print(f"Failed to archive page with ID: {page_id}. Response: {response.json()}")
+
 def create_notion_page(task, access_token):
     # Update Authorization Header with Access Token
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json",
-        "Notion-Version": "2022-06-28"
+        "Notion-Version": NOTION_VERSION
     }
 
     # Make request to Notion API
     data = {
         "parent": {"database_id": NOTION_DATABASE_ID},
         "properties": {
+            "Completed": {"checkbox": task['status'] != 'needsAction'},
             "Name": {"title": [{"text": {"content": task['title']}}]},
-            "Description": {"rich_text": [{"text": {"content": task['description']}}]},
+            "Description": {"rich_text": [{"text": {"content": task['notes']}}]},
             "Due Date": {"date": {"start": task.get('due', None)}}
         }
     }
 
-    print("Sending request to Notion API...")
     response = requests.post(NOTION_API_URL, headers=headers, json=data)
-    print("Response:", response.json())
     return response.status_code == 200
 
-
-# Main Function for testing
 def main():
     access_token = authenticate_with_oauth()
-    if not access_token:
-        print("Authentication failed.")
-        return
-    print("Access Token:", access_token)
-    task = {
-        "title": "Sample Task 7", 
-        "description": "This is a sample task description.",
-        "due": "2024-07-25"
-    }
-    print("Creating Notion page...")
-    success = create_notion_page(task, access_token)
-    if success:
-        print("Notion page created successfully!")
-    else:
-        print("Failed to create Notion page.")
+    # if not access_token:
+    #     print("Authentication failed.")
+    #     return
+    # print("Access Token:", access_token)
+    # task = {
+    #     "completed": {"checkbox": task.get('completed', False)},
+    #     "title": "Sample Task 7", 
+    #     "description": "This is a sample task description.",
+    #     "due": "2024-07-25"
+    # }
+    # print("Creating Notion page...")
+    # success = create_notion_page(task, access_token)
+    # if success:
+    #     print("Notion page created successfully!")
+    # else:
+    #     print("Failed to create Notion page.")
+    clear_notion_database(access_token)
 
 if __name__ == "__main__":
     main()
