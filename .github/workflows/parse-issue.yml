@@ -17,14 +17,18 @@ jobs:
       - name: Parse POC Request Fields
         id: parse_fields
         run: |
-          # Extract fields using grep and sed
-          LEAD_NAME=$(echo "${{ github.event.issue.body }}" | grep -A 1 "What is the name of the lead or the customer?" | tail -1)
-          CUSTOMER_EMAIL=$(echo "${{ github.event.issue.body }}" | grep -A 1 "What is the email of the customer/lead" | tail -1)
-          CUSTOMER_TYPE=$(echo "${{ github.event.issue.body }}" | grep -A 1 "Is it is a lead or an existing customer?" | tail -1)
-          POC_LINK=$(echo "${{ github.event.issue.body }}" | grep -A 1 "preliminary POC" | tail -1)
-          API_SPEC=$(echo "${{ github.event.issue.body }}" | grep -A 1 "API spec(s) below" | tail -1)
-          DOCS_LINK=$(echo "${{ github.event.issue.body }}" | grep -A 1 "API documentation online" | tail -1)
-          POC_LANGS=$(echo "${{ github.event.issue.body }}" | grep -A 9 "SDK languages are POC required for?" | grep "\[x\]" | sed 's/\[x\] //')
+          ISSUE_BODY="${{ github.event.issue.body }}"
+
+          # Extract fields using sed for accuracy with multi-line handling
+          LEAD_NAME=$(echo "$ISSUE_BODY" | sed -n '/What is the name of the lead or the customer?/{n;p;}')
+          CUSTOMER_EMAIL=$(echo "$ISSUE_BODY" | sed -n '/What is the email of the customer\/lead/{n;p;}')
+          CUSTOMER_TYPE=$(echo "$ISSUE_BODY" | sed -n '/Is it is a lead or an existing customer?/{n;p;}')
+          POC_LINK=$(echo "$ISSUE_BODY" | sed -n '/preliminary POC/{n;p;}')
+          API_SPEC=$(echo "$ISSUE_BODY" | sed -n '/Add the links to the customer/{n;p;}')
+          DOCS_LINK=$(echo "$ISSUE_BODY" | sed -n '/API documentation online/{n;p;}')
+          
+          # Multi-line SDK languages - get all checked languages
+          POC_LANGS=$(echo "$ISSUE_BODY" | sed -n '/SDK languages are POC required for?/,/Is an API Portal required too?/{/^\* \[x\]/{s/^\* \[x\] //;p;}}')
 
           # Display parsed values
           echo "Lead Name: $LEAD_NAME"
