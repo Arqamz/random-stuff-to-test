@@ -19,22 +19,23 @@ jobs:
         run: |
           ISSUE_BODY="${{ github.event.issue.body }}"
 
-          # Extract fields using sed for accuracy with multi-line handling
-          LEAD_NAME=$(echo "$ISSUE_BODY" | sed -n '/What is the name of the lead or the customer?/{n;p;}')
-          CUSTOMER_EMAIL=$(echo "$ISSUE_BODY" | sed -n '/What is the email of the customer\/lead/{n;p;}')
-          CUSTOMER_TYPE=$(echo "$ISSUE_BODY" | sed -n '/Is it is a lead or an existing customer?/{n;p;}')
-          POC_LINK=$(echo "$ISSUE_BODY" | sed -n '/preliminary POC/{n;p;}')
-          API_SPEC=$(echo "$ISSUE_BODY" | sed -n '/Add the links to the customer/{n;p;}')
-          DOCS_LINK=$(echo "$ISSUE_BODY" | sed -n '/API documentation online/{n;p;}')
-          
-          # Multi-line SDK languages - get all checked languages
-          POC_LANGS=$(echo "$ISSUE_BODY" | sed -n '/SDK languages are POC required for?/,/Is an API Portal required too?/{/^\* \[x\]/{s/^\* \[x\] //;p;}}')
+          # Remove markdown '**' symbols for bold text
+          CLEAN_BODY=$(echo "$ISSUE_BODY" | sed 's/\*\*//g')
+
+          # Use sed to capture the values after each markdown question
+          LEAD_NAME=$(echo "$CLEAN_BODY" | sed -n '/What is the name of the lead or the customer\?/{n;p;}' | xargs)
+          CUSTOMER_TYPE=$(echo "$CLEAN_BODY" | sed -n '/Is it is a lead or an existing customer\?/{n;p;}' | xargs)
+          DOCS_LINK=$(echo "$CLEAN_BODY" | sed -n '/customer have existing API documentation online/{n;p;}' | xargs)
+          SDK_LANGS=$(echo "$CLEAN_BODY" | sed -n '/SDK languages are POC required for\?/,/Is an API Portal required too\?/{/^\* \[x\]/{s/^\* \[x\] //;p;}}' | xargs -d '\n')
+          POC_DEPTH=$(echo "$CLEAN_BODY" | sed -n '/expected depth of this proof-of-concept\?/,/Who is the AE/{/^\* \[x\]/{s/^\* \[x\] //;p;}}' | xargs)
+          AE_NAME=$(echo "$CLEAN_BODY" | sed -n '/Who is the AE on this customer\//lead\?/{n;p;}' | xargs)
+          DUE_DATE=$(echo "$CLEAN_BODY" | sed -n '/What date do you need this by\?/{n;p;}' | xargs)
 
           # Display parsed values
           echo "Lead Name: $LEAD_NAME"
-          echo "Customer Email: $CUSTOMER_EMAIL"
           echo "Customer Type: $CUSTOMER_TYPE"
-          echo "Preliminary POC Link: $POC_LINK"
-          echo "API Spec Link: $API_SPEC"
           echo "Documentation Link: $DOCS_LINK"
-          echo "POC Required SDK Languages: $POC_LANGS"
+          echo "POC Required SDK Languages: $SDK_LANGS"
+          echo "Expected Depth: $POC_DEPTH"
+          echo "Account Executive Name: $AE_NAME"
+          echo "Due Date: $DUE_DATE"
