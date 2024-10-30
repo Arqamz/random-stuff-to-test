@@ -21,17 +21,48 @@ jobs:
 
           # Remove markdown '**' symbols for bold text
           CLEAN_BODY=$(echo "$ISSUE_BODY" | sed 's/\*\*//g')
+          echo "Cleaned Body:"
+          echo "$CLEAN_BODY"
+          echo "--------------------"
 
-          # Use sed to capture the values after each markdown question
-          LEAD_NAME=$(echo "$CLEAN_BODY" | sed -n '/What is the name of the lead or the customer\?/{n;p;}' | xargs)
-          CUSTOMER_TYPE=$(echo "$CLEAN_BODY" | sed -n '/Is it is a lead or an existing customer\?/{n;p;}' | xargs)
-          DOCS_LINK=$(echo "$CLEAN_BODY" | sed -n '/customer have existing API documentation online/{n;p;}' | xargs)
+          # Extract each field and display parsed results
+          echo "Extracting Lead Name..."
+          LEAD_NAME=$(echo "$CLEAN_BODY" | sed -n '/What is the name of the lead or the customer\?/{n;n;p;}' | xargs)
+          echo "Lead Name: $LEAD_NAME"
+          echo "--------------------"
+
+          echo "Extracting Customer Type..."
+          CUSTOMER_TYPE=$(echo "$CLEAN_BODY" | sed -n '/Is it is a lead or an existing customer\?/{n;n;p;}' | xargs)
+          echo "Customer Type: $CUSTOMER_TYPE"
+          echo "--------------------"
+
+          echo "Extracting Documentation Link..."
+          DOCS_LINK=$(echo "$CLEAN_BODY" | sed -n '/Does the customer have existing API documentation online\?/{n;n;p;}' | xargs)
+          echo "Documentation Link: $DOCS_LINK"
+          echo "--------------------"
+
+          echo "Extracting POC Required SDK Languages..."
           SDK_LANGS=$(echo "$CLEAN_BODY" | sed -n '/SDK languages are POC required for\?/,/Is an API Portal required too\?/{/^\* \[x\]/{s/^\* \[x\] //;p;}}' | xargs -d '\n')
-          POC_DEPTH=$(echo "$CLEAN_BODY" | sed -n '/expected depth of this proof-of-concept\?/,/Who is the AE/{/^\* \[x\]/{s/^\* \[x\] //;p;}}' | xargs)
-          AE_NAME=$(echo "$CLEAN_BODY" | sed -n '/Who is the AE on this customer\//lead\?/{n;p;}' | xargs)
-          DUE_DATE=$(echo "$CLEAN_BODY" | sed -n '/What date do you need this by\?/{n;p;}' | xargs)
+          echo "POC Required SDK Languages: $SDK_LANGS"
+          echo "--------------------"
 
-          # Display parsed values
+          echo "Extracting Expected Depth..."
+          POC_DEPTH=$(echo "$CLEAN_BODY" | sed -n '/expected depth of this proof-of-concept\?/,/Who is the AE/{/^\* \[x\]/{s/^\* \[x\] //;p;}}' | xargs -d '\n')
+          echo "Expected Depth: $POC_DEPTH"
+          echo "--------------------"
+
+          echo "Extracting Account Executive Name..."
+          AE_NAME=$(echo "$CLEAN_BODY" | sed -n '/Who is the AE on this customer\/lead\?/{n;n;p;}' | xargs)
+          echo "Account Executive Name: $AE_NAME"
+          echo "--------------------"
+
+          echo "Extracting Due Date..."
+          DUE_DATE=$(echo "$CLEAN_BODY" | sed -n '/What date do you need this by\?/{n;n;p;}' | xargs)
+          echo "Due Date: $DUE_DATE"
+          echo "--------------------"
+
+          # Output parsed values
+          echo "Final Parsed Values:"
           echo "Lead Name: $LEAD_NAME"
           echo "Customer Type: $CUSTOMER_TYPE"
           echo "Documentation Link: $DOCS_LINK"
