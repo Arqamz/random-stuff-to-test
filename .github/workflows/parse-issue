@@ -1,0 +1,36 @@
+name: Parse POC Request Issue
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  parse_issue:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'poc')
+    steps:
+      - name: Display Issue Information
+        run: |
+          echo "Issue Title: ${{ github.event.issue.title }}"
+          echo "Issue Body: ${{ github.event.issue.body }}"
+
+      - name: Parse POC Request Fields
+        id: parse_fields
+        run: |
+          # Extract fields using grep and sed
+          LEAD_NAME=$(echo "${{ github.event.issue.body }}" | grep -A 1 "What is the name of the lead or the customer?" | tail -1)
+          CUSTOMER_EMAIL=$(echo "${{ github.event.issue.body }}" | grep -A 1 "What is the email of the customer/lead" | tail -1)
+          CUSTOMER_TYPE=$(echo "${{ github.event.issue.body }}" | grep -A 1 "Is it is a lead or an existing customer?" | tail -1)
+          POC_LINK=$(echo "${{ github.event.issue.body }}" | grep -A 1 "preliminary POC" | tail -1)
+          API_SPEC=$(echo "${{ github.event.issue.body }}" | grep -A 1 "API spec(s) below" | tail -1)
+          DOCS_LINK=$(echo "${{ github.event.issue.body }}" | grep -A 1 "API documentation online" | tail -1)
+          POC_LANGS=$(echo "${{ github.event.issue.body }}" | grep -A 9 "SDK languages are POC required for?" | grep "\[x\]" | sed 's/\[x\] //')
+
+          # Display parsed values
+          echo "Lead Name: $LEAD_NAME"
+          echo "Customer Email: $CUSTOMER_EMAIL"
+          echo "Customer Type: $CUSTOMER_TYPE"
+          echo "Preliminary POC Link: $POC_LINK"
+          echo "API Spec Link: $API_SPEC"
+          echo "Documentation Link: $DOCS_LINK"
+          echo "POC Required SDK Languages: $POC_LANGS"
