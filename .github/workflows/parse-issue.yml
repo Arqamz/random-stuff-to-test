@@ -36,11 +36,11 @@ jobs:
           echo "Company Website Base URL: $COMPANY_URL"
           echo "--------------------"
 
-          echo "Extracting Specification Folder Details..."
-          SPEC_FOLDER=$(echo "$CLEAN_BODY" | sed -n '/^### Specification Folder Details \*/{n;n;p;}' | xargs)
-          echo "Specification Folder Details: $SPEC_FOLDER"
+          echo "Extracting Specification Folder Zip URL..."
+          SPEC_FOLDER_URL=$(echo "$CLEAN_BODY" | sed -n '/^### Specification Folder Details \*/{n;n;p;}' | grep -oE '\(https://[^)]*\)|https://[^ ]*' | sed 's/[()]//g')
+          echo "Specification Folder URL: $SPEC_FOLDER_URL"
           echo "--------------------"
-
+          
           echo "Extracting Favicon Image..."
           FAVICON_IMAGE=$(echo "$CLEAN_BODY" | sed -n '/^### Favicon Image (Optional)/{n;n;p;}' | xargs)
           echo "Favicon Image: $FAVICON_IMAGE"
@@ -65,12 +65,13 @@ jobs:
           echo "Final Parsed Values:"
           echo "Customer Name: $CUSTOMER_NAME"
           echo "Company Website Base URL: $COMPANY_URL"
+          
           # Check if SPEC_FOLDER_URL is not empty
           if [ -z "$SPEC_FOLDER_URL" ]; then
             echo "No Specification Folder Zip URL found."
             exit 1
           fi
-      
+          
           # Download the zip file
           echo "Downloading Specification Folder Zip..."
           curl -L -o spec_folder.zip "$SPEC_FOLDER_URL"
