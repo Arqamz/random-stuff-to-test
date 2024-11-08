@@ -65,7 +65,23 @@ jobs:
           echo "Final Parsed Values:"
           echo "Customer Name: $CUSTOMER_NAME"
           echo "Company Website Base URL: $COMPANY_URL"
-          echo "Specification Folder Details: $SPEC_FOLDER"
+          # Check if SPEC_FOLDER_URL is not empty
+          if [ -z "$SPEC_FOLDER_URL" ]; then
+            echo "No Specification Folder Zip URL found."
+            exit 1
+          fi
+      
+          # Download the zip file
+          echo "Downloading Specification Folder Zip..."
+          curl -L -o spec_folder.zip "$SPEC_FOLDER_URL"
+          
+          # Unzip and list contents
+          echo "Extracting Specification Folder..."
+          mkdir -p spec_folder
+          unzip -q spec_folder.zip -d spec_folder
+          echo "Contents of Specification Folder:"
+          ls -R spec_folder
+          echo "--------------------"
           echo "Favicon Image: $FAVICON_IMAGE"
           echo "Primary Color Hex Code: ${PRIMARY_COLOR:-#0c7ff2}"
           echo "Secondary Color Hex Code: ${SECONDARY_COLOR:-$PRIMARY_COLOR}"
