@@ -1,0 +1,85 @@
+name: POC Developer Portal Request
+description: Request to generate a custom Developer Portal proof-of-concept (POC)
+labels: ["POC Request", "Generate API Portal"]
+assignees:
+  # - moizgillani
+  - arqamz
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Request for Developer Portal Proof-of-Concept (POC)
+
+        Please fill out the information below to initiate the creation of your custom Developer Portal POC. Required fields are marked with *.
+
+  - type: input
+    id: customer_name
+    attributes:
+      label: Customer Name *
+      placeholder: "Example: Acme Corp"
+      description: "This name will appear in the navbar as '[Customer Name] Developer Portal'."
+    validations:
+      required: true
+
+  - type: input
+    id: company_url
+    attributes:
+      label: Company Website Base URL *
+      placeholder: "Example: acme.com"
+      description: "Provide the domain name only, e.g., 'companyname.com' or 'companyname.io' (exclude 'www.' and 'https://')."
+    validations:
+      required: true
+
+  - type: file
+    id: spec_folder_zip
+    attributes:
+      label: Specification Folder (ZIP) *
+      description: |
+        Attach your zipped folder containing API specifications. It should be structured as follows:
+
+        ```
+        📂 your-spec-folder 
+        ├── spec1.json
+        ├── spec2.json
+        └── spec3.json
+        ```
+
+        All specs should be in the root directory; merging will be handled automatically.
+    validations:
+      required: true
+      multiple: false
+      file_type: [zip]
+
+  - type: file
+    id: favicon_image
+    attributes:
+      label: Favicon Image (Optional)
+      description: "Upload a `.ico` `.svg` or `.png` file to use as the portal's favicon."
+      multiple: false
+      file_type: [ico, png, svg]
+
+  - type: input
+    id: primary_color
+    attributes:
+      label: Primary Color Hex Code (Optional)
+      placeholder: "#0c7ff2"
+      description: "Specify the primary color for the portal. Defaults to #0c7ff2 if not provided."
+
+  - type: input
+    id: secondary_color
+    attributes:
+      label: Secondary Color Hex Code (Optional)
+      placeholder: "#0c7ff2"
+      description: "Specify the secondary color. Defaults to the primary color if not provided."
+
+  - type: input
+    id: link_color
+    attributes:
+      label: Link Color Hex Code (Optional)
+      placeholder: "#00C7D4"
+      description: "Specify the link color. Defaults to #00C7D4 if not provided."
+
+  - type: markdown
+    attributes:
+      value: |
+        Thank you! Our team will use this information to generate your Developer Portal POC.
