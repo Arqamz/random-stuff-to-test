@@ -30,12 +30,12 @@ body:
     validations:
       required: true
 
-  - type: file
-    id: spec_folder_zip
+  - type: textarea
+    id: spec_folder_details
     attributes:
-      label: Specification Folder (ZIP) *
+      label: Specification Folder Details *
       description: |
-        Attach your zipped folder containing API specifications. It should be structured as follows:
+        Provide details or a link to the zipped folder containing API specifications. Your folder should be structured as follows:
 
         ```
         📂 your-spec-folder 
@@ -45,18 +45,16 @@ body:
         ```
 
         All specs should be in the root directory; merging will be handled automatically.
+      placeholder: "Example: Link to ZIP or path on shared drive"
     validations:
       required: true
-      multiple: false
-      file_type: [zip]
 
-  - type: file
+  - type: textarea
     id: favicon_image
     attributes:
       label: Favicon Image (Optional)
-      description: "Upload a `.ico` `.svg` or `.png` file to use as the portal's favicon."
-      multiple: false
-      file_type: [ico, png, svg]
+      description: "Provide a link to the favicon image file (.ico or .png) to be used in the portal."
+      placeholder: "Link to favicon file"
 
   - type: input
     id: primary_color
