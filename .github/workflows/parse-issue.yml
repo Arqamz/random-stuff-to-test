@@ -19,54 +19,54 @@ jobs:
         run: |
           ISSUE_BODY="${{ github.event.issue.body }}"
 
-          # Remove markdown '**' symbols for bold text
-          CLEAN_BODY=$(echo "$ISSUE_BODY" | sed 's/\*\*//g')
+          # Remove markdown formatting symbols
+          CLEAN_BODY=$(echo "$ISSUE_BODY" | sed 's/\*\*//g' | sed 's/_No response_//g')
           echo "Cleaned Body:"
           echo "$CLEAN_BODY"
           echo "--------------------"
 
-          # Extract each field and display parsed results
-          echo "Extracting Lead Name..."
-          LEAD_NAME=$(echo "$CLEAN_BODY" | sed -n '/What is the name of the lead or the customer\?/{n;n;p;}' | xargs)
-          echo "Lead Name: $LEAD_NAME"
+          # Extract each field using grep and sed based on headings
+          echo "Extracting Customer Name..."
+          CUSTOMER_NAME=$(echo "$CLEAN_BODY" | sed -n '/^### Customer Name \*/{n;n;p;}' | xargs)
+          echo "Customer Name: $CUSTOMER_NAME"
           echo "--------------------"
 
-          echo "Extracting Customer Type..."
-          CUSTOMER_TYPE=$(echo "$CLEAN_BODY" | sed -n '/Is it is a lead or an existing customer\?/{n;n;p;}' | xargs)
-          echo "Customer Type: $CUSTOMER_TYPE"
+          echo "Extracting Company Website Base URL..."
+          COMPANY_URL=$(echo "$CLEAN_BODY" | sed -n '/^### Company Website Base URL \*/{n;n;p;}' | xargs)
+          echo "Company Website Base URL: $COMPANY_URL"
           echo "--------------------"
 
-          echo "Extracting Documentation Link..."
-          DOCS_LINK=$(echo "$CLEAN_BODY" | sed -n '/Does the customer have existing API documentation online\?/{n;n;p;}' | xargs)
-          echo "Documentation Link: $DOCS_LINK"
+          echo "Extracting Specification Folder Details..."
+          SPEC_FOLDER=$(echo "$CLEAN_BODY" | sed -n '/^### Specification Folder Details \*/{n;n;p;}' | xargs)
+          echo "Specification Folder Details: $SPEC_FOLDER"
           echo "--------------------"
 
-          echo "Extracting POC Required SDK Languages..."
-          SDK_LANGS=$(echo "$CLEAN_BODY" | sed -n '/SDK languages are POC required for\?/,/Is an API Portal required too\?/{/^\* \[x\]/{s/^\* \[x\] //;p;}}' | xargs -d '\n')
-          echo "POC Required SDK Languages: $SDK_LANGS"
+          echo "Extracting Favicon Image..."
+          FAVICON_IMAGE=$(echo "$CLEAN_BODY" | sed -n '/^### Favicon Image (Optional)/{n;n;p;}' | xargs)
+          echo "Favicon Image: $FAVICON_IMAGE"
           echo "--------------------"
 
-          echo "Extracting Expected Depth..."
-          POC_DEPTH=$(echo "$CLEAN_BODY" | sed -n '/expected depth of this proof-of-concept\?/,/Who is the AE/{/^\* \[x\]/{s/^\* \[x\] //;p;}}' | xargs -d '\n')
-          echo "Expected Depth: $POC_DEPTH"
+          echo "Extracting Primary Color Hex Code..."
+          PRIMARY_COLOR=$(echo "$CLEAN_BODY" | sed -n '/^### Primary Color Hex Code (Optional)/{n;n;p;}' | xargs)
+          echo "Primary Color Hex Code: ${PRIMARY_COLOR:-#0c7ff2}"
           echo "--------------------"
 
-          echo "Extracting Account Executive Name..."
-          AE_NAME=$(echo "$CLEAN_BODY" | sed -n '/Who is the AE on this customer\/lead\?/{n;n;p;}' | xargs)
-          echo "Account Executive Name: $AE_NAME"
+          echo "Extracting Secondary Color Hex Code..."
+          SECONDARY_COLOR=$(echo "$CLEAN_BODY" | sed -n '/^### Secondary Color Hex Code (Optional)/{n;n;p;}' | xargs)
+          echo "Secondary Color Hex Code: ${SECONDARY_COLOR:-$PRIMARY_COLOR}"
           echo "--------------------"
 
-          echo "Extracting Due Date..."
-          DUE_DATE=$(echo "$CLEAN_BODY" | sed -n '/What date do you need this by\?/{n;n;p;}' | xargs)
-          echo "Due Date: $DUE_DATE"
+          echo "Extracting Link Color Hex Code..."
+          LINK_COLOR=$(echo "$CLEAN_BODY" | sed -n '/^### Link Color Hex Code (Optional)/{n;n;p;}' | xargs)
+          echo "Link Color Hex Code: ${LINK_COLOR:-#00C7D4}"
           echo "--------------------"
 
           # Output parsed values
           echo "Final Parsed Values:"
-          echo "Lead Name: $LEAD_NAME"
-          echo "Customer Type: $CUSTOMER_TYPE"
-          echo "Documentation Link: $DOCS_LINK"
-          echo "POC Required SDK Languages: $SDK_LANGS"
-          echo "Expected Depth: $POC_DEPTH"
-          echo "Account Executive Name: $AE_NAME"
-          echo "Due Date: $DUE_DATE"
+          echo "Customer Name: $CUSTOMER_NAME"
+          echo "Company Website Base URL: $COMPANY_URL"
+          echo "Specification Folder Details: $SPEC_FOLDER"
+          echo "Favicon Image: $FAVICON_IMAGE"
+          echo "Primary Color Hex Code: ${PRIMARY_COLOR:-#0c7ff2}"
+          echo "Secondary Color Hex Code: ${SECONDARY_COLOR:-$PRIMARY_COLOR}"
+          echo "Link Color Hex Code: ${LINK_COLOR:-#00C7D4}"
