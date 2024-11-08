@@ -7,7 +7,7 @@ on:
 jobs:
   parse_issue:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'poc')
+    if: contains(github.event.issue.labels.*.name, 'Generate API Portal') || contains(github.event.issue.labels.*.name, 'POC Request')
     steps:
       - name: Display Issue Information
         run: |
